@@ -28,11 +28,6 @@ val breaks = arrayOf<String>(
     "14:05:00",
     "14:10:00",
     "14:55:00",
-//    "21:37:00"
-    "22:35:00",
-    "22:35:30",
-    "22:36:00",
-    "23:59:59",
 )
 
 class MainActivity : AppCompatActivity() {
