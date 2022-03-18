@@ -1,10 +1,14 @@
 package com.fhodun.breakwatch
 
 import android.app.AlertDialog
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.view.View
 import android.widget.TextView
+import org.w3c.dom.Text
 import java.time.LocalTime
 
 val breaks = arrayOf<String>(
@@ -25,35 +29,52 @@ val breaks = arrayOf<String>(
     "14:10:00",
     "14:55:00",
 //    "21:37:00"
+    "22:35:00",
+    "22:35:30",
+    "22:36:00",
+    "23:59:59",
 )
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var breakDuration: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val breakDuration = findViewById<TextView>(R.id.breakDuration)
+        breakDuration = findViewById<TextView>(R.id.breakDuration)
+        runTimer()
+    }
 
-//        while (true) {
-        var nearestBreak: Int = 0
-        var nearestBreakString: String = "00:00:00"
+    private fun runTimer() {
+        var nearestBreak: Int =
+            LocalTime.parse(breaks[breaks.size - 1]).toSecondOfDay() - LocalTime.now()
+                .toSecondOfDay()
+        var nearestBreakString: String = breaks[breaks.size - 1]
 
         for (brk in breaks) {
             val brkDistance: Int =
                 LocalTime.parse(brk).toSecondOfDay() - LocalTime.now().toSecondOfDay()
-            if (brkDistance <= 0) {
-                continue
-            }
-            if (brkDistance > nearestBreak) {
+            if (brkDistance <= 0) continue
+            if (brkDistance < nearestBreak) {
                 nearestBreak = brkDistance
                 nearestBreakString = brk
             }
         }
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Android alert!")
-        builder.setMessage("Found nearest break at $nearestBreakString and time to it is $nearestBreak")
-        builder.show()
+        val message = "Found nearest break at $nearestBreakString and time to it is ${
+            LocalTime.ofSecondOfDay(
+                nearestBreak.toLong()
+            )
+        }"
+        val alert = Dialog(this)
+        alert.setContentView(R.layout.break_dialog)
+        alert.findViewById<TextView>(R.id.message_text).text = message
+        alert.create()
+        alert.show()
+        Handler().postDelayed({
+            alert.dismiss()
+        }, 5_000)
 
         object : CountDownTimer((nearestBreak * 1000).toLong(), 1000) {
             // Callback function, fired on regular interval
@@ -64,8 +85,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 breakDuration.text = "wypad z klasy!"
+                Handler().postDelayed({
+                    runTimer()
+                }, 10_000)
             }
         }.start()
-//        }
     }
 }
