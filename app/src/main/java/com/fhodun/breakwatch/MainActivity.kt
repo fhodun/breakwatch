@@ -1,14 +1,11 @@
 package com.fhodun.breakwatch
 
-import android.app.AlertDialog
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
-import android.view.View
 import android.widget.TextView
-import org.w3c.dom.Text
 import java.time.LocalTime
 
 val breaks = arrayOf<String>(
@@ -28,6 +25,7 @@ val breaks = arrayOf<String>(
     "14:05:00",
     "14:10:00",
     "14:55:00",
+    "23:59:59",
 )
 
 class MainActivity : AppCompatActivity() {
